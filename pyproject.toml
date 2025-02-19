@@ -1,0 +1,30 @@
+[project]
+name = 'mewinfo'
+version = '0.1.0'
+authors = [
+  { name='Fiona Klute', email='fiona.klute@gmx.de' },
+]
+description = 'System information tool'
+license = 'GPL-3.0-or-later'
+requires-python = '>=3.13'
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Operating System :: POSIX :: Linux',
+    'Programming Language :: Python :: 3',
+    'Topic :: System :: Monitoring',
+]
+dependencies = []
+
+[project.scripts]
+'mewinfo' = 'mewinfo:main'
+
+[build-system]
+requires = ['hatchling']
+build-backend = 'hatchling.build'
+
+[tool.mypy]
+exclude = [
+    '^noxfile\.py$',
+]
+strict = true
