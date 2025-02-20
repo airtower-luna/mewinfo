@@ -6,6 +6,7 @@ import json
 import platform
 import re
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import timedelta
 from enum import Enum
@@ -387,12 +388,24 @@ ITEMS: dict[str, type[InfoItem]] = {
 }
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-j', '--json', action='store_true', help='output data as JSON')
-    args = parser.parse_args()
+class MewArgs(argparse.Namespace):
+    json: bool
+    func: Callable[[Self], None]
 
+
+def sensors(args: MewArgs) -> None:
+    data = Hwmon.parse()
+
+    if args.json:
+        json.dump(data, sys.stdout, indent=2, default=lambda x: x.json())
+        print()
+    else:
+        print(data)
+        print()
+        print('=^.^=')
+
+
+def _all(args: MewArgs) -> None:
     data: dict[str, InfoItem] = dict()
     for name, cls in ITEMS.items():
         try:
@@ -408,6 +421,18 @@ def main() -> None:
             print(item)
             print()
         print('=^.^=')
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-j', '--json', action='store_true', help='output data as JSON')
+    parser.set_defaults(func=_all)
+    subparsers = parser.add_subparsers()
+    sensors_parser = subparsers.add_parser('sensors')
+    sensors_parser.set_defaults(func=sensors)
+    args = parser.parse_args(namespace=MewArgs())
+    args.func(args)
 
 
 if __name__ == '__main__':
