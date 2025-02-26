@@ -4,6 +4,7 @@ import argparse
 import io
 import json
 import platform
+import random
 import re
 import sys
 from collections.abc import Callable
@@ -393,6 +394,13 @@ class MewArgs(argparse.Namespace):
     func: Callable[[Self], None]
 
 
+MEOWS = ['mew', 'meow', 'nya', 'nyu']
+
+
+def meow() -> None:
+    print(f'{random.SystemRandom().choice(MEOWS).capitalize()}! =^.^=')
+
+
 def sensors(args: MewArgs) -> None:
     data = Hwmon.parse()
 
@@ -402,7 +410,7 @@ def sensors(args: MewArgs) -> None:
     else:
         print(data)
         print()
-        print('=^.^=')
+        meow()
 
 
 def _all(args: MewArgs) -> None:
@@ -420,7 +428,7 @@ def _all(args: MewArgs) -> None:
         for item in data.values():
             print(item)
             print()
-        print('=^.^=')
+        meow()
 
 
 def main() -> None:
