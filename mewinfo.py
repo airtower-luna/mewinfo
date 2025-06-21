@@ -67,28 +67,33 @@ class Uname:
 class SystemType:
     compatible: list[str]
     model: str
-    serial: str
+    serial: str | None
 
     @classmethod
     def parse(cls) -> Self:
+        try:
+            serial = (DEVICE_TREE / 'serial-number').read_text().strip('\0')
+        except FileNotFoundError:
+            serial = None
         return cls(
             compatible=[
                 b.decode()
                 for b in (DEVICE_TREE / 'compatible').read_bytes().split(b'\0')
                 if b],
             model=(DEVICE_TREE / 'model').read_text().strip('\0'),
-            serial=(DEVICE_TREE / 'serial-number').read_text().strip('\0'),
+            serial=serial,
         )
 
     def json(self) -> dict[str, Any]:
         return {
             'compatible': self.compatible,
             'model': self.model,
-            'serial': self.serial,
+            **({'serial': self.serial} if self.serial else {}),
         }
 
     def __str__(self) -> str:
-        return f'{self.model}, serial {self.serial}\n' \
+        return f'{self.model}' \
+            f'{f', serial {self.serial}' if self.serial else ''}\n' \
             f'compatible: {', '.join(json.dumps(s) for s in self.compatible)}'
 
 
