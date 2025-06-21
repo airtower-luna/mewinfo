@@ -431,7 +431,10 @@ def _all(args: MewArgs) -> None:
         print()
     else:
         for item in data.values():
-            print(item)
+            s = str(item)
+            if not s.strip():
+                continue
+            print(s)
             print()
         meow()
 
